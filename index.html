@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lategram — Every Place Holds a Story</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C97A;
+    --navy: #0D1B2A;
+    --navy-mid: #152638;
+    --navy-light: #1E3550;
+    --cream: #F5EDD8;
+    --cream-dim: #D9CEBD;
+    --dust: #8A7E6E;
+    --red-pin: #C84B31;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--navy);
+    color: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: default;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.4rem 3rem;
+    background: linear-gradient(to bottom, rgba(13,27,42,0.95), transparent);
+    backdrop-filter: blur(4px);
+  }
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    letter-spacing: 0.04em;
+    color: var(--gold);
+  }
+  .logo span { font-style: italic; color: var(--cream); }
+  nav ul { list-style: none; display: flex; gap: 2.5rem; }
+  nav ul li a {
+    text-decoration: none;
+    color: var(--cream-dim);
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: color 0.3s;
+  }
+  nav ul li a:hover { color: var(--gold); }
+  .nav-cta {
+    background: var(--gold);
+    color: var(--navy) !important;
+    padding: 0.55rem 1.4rem;
+    border-radius: 2px;
+    font-weight: 500 !important;
+  }
+  .nav-cta:hover { background: var(--gold-light); color: var(--navy) !important; }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 60% 40%, rgba(201,168,76,0.08) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 80% at 20% 80%, rgba(21,38,56,0.9) 0%, transparent 60%),
+      linear-gradient(160deg, #0D1B2A 0%, #152638 40%, #1a2e45 100%);
+  }
+
+  /* Floating photo cards */
+  .photo-float {
+    position: absolute;
+    border-radius: 2px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    animation: floatDrift linear infinite;
+    opacity: 0;
+  }
+  .photo-float img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .photo-float .photo-inner {
+    width: 100%; height: 100%;
+    background: var(--navy-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem;
+  }
+
+  @keyframes floatDrift {
+    0%   { opacity: 0; transform: translateY(20px) rotate(var(--rot)); }
+    10%  { opacity: var(--max-opacity); }
+    90%  { opacity: var(--max-opacity); }
+    100% { opacity: 0; transform: translateY(-30px) rotate(calc(var(--rot) + 3deg)); }
+  }
+
+  .pf1 { width: 160px; height: 200px; top: 15%; left: 8%; --rot: -4deg; --max-opacity: 0.7; animation-duration: 12s; animation-delay: 0s; }
+  .pf2 { width: 130px; height: 160px; top: 55%; left: 5%; --rot: 3deg; --max-opacity: 0.5; animation-duration: 15s; animation-delay: 3s; }
+  .pf3 { width: 180px; height: 140px; top: 10%; right: 10%; --rot: 5deg; --max-opacity: 0.65; animation-duration: 14s; animation-delay: 1.5s; }
+  .pf4 { width: 120px; height: 150px; top: 60%; right: 7%; --rot: -6deg; --max-opacity: 0.55; animation-duration: 11s; animation-delay: 5s; }
+  .pf5 { width: 140px; height: 180px; top: 30%; left: 18%; --rot: 2deg; --max-opacity: 0.4; animation-duration: 13s; animation-delay: 7s; }
+  .pf6 { width: 100px; height: 120px; top: 20%; right: 22%; --rot: -3deg; --max-opacity: 0.45; animation-duration: 16s; animation-delay: 4s; }
+
+  /* Pin dot */
+  .pin-pulse {
+    position: absolute;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--navy-mid);
+    box-shadow: 0 0 0 0 rgba(13,27,42,0.7);
+    animation: pinPulse 2.5s ease-out infinite;
+  }
+  @keyframes pinPulse {
+    0% { box-shadow: 0 0 0 0 rgba(13,27,42,0.8); }
+    70% { box-shadow: 0 0 0 36px rgba(13,27,42,0); }
+    100% { box-shadow: 0 0 0 0 rgba(13,27,42,0); }
+  }
+  .pd1 { top: 22%; left: 55%; }
+  .pd2 { top: 48%; left: 42%; }
+  .pd3 { top: 65%; left: 63%; animation-delay: 1.2s; }
+
+  /* Connecting lines (SVG) */
+  .hero-lines {
+    position: absolute; inset: 0; pointer-events: none;
+  }
+
+  .hero-content {
+    position: relative; z-index: 2;
+    text-align: center;
+    padding: 2rem;
+    max-width: 760px;
+  }
+  .hero-eyebrow {
+    font-size: 0.75rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.3s;
+  }
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 7vw, 5.5rem);
+    line-height: 1.08;
+    letter-spacing: -0.01em;
+    margin-bottom: 1.8rem;
+    opacity: 0;
+    animation: fadeUp 0.9s ease forwards 0.5s;
+  }
+  .hero-title em {
+    font-style: italic;
+    color: var(--gold);
+    display: block;
+  }
+  .hero-sub {
+    font-size: 1.1rem;
+    line-height: 1.75;
+    color: var(--cream-dim);
+    max-width: 520px;
+    margin: 0 auto 2.8rem;
+    opacity: 0;
+    animation: fadeUp 0.9s ease forwards 0.7s;
+  }
+  .hero-actions {
+    display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.9s ease forwards 0.9s;
+  }
+  .btn-primary {
+    background: var(--gold);
+    color: var(--navy);
+    padding: 0.9rem 2.2rem;
+    border: none;
+    border-radius: 2px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.3s, transform 0.2s;
+  }
+  .btn-primary:hover { background: var(--gold-light); transform: translateY(-2px); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--cream);
+    padding: 0.9rem 2.2rem;
+    border: 1px solid rgba(245,237,216,0.3);
+    border-radius: 2px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-decoration: none;
+    transition: border-color 0.3s, transform 0.2s;
+  }
+  .btn-ghost:hover { border-color: var(--gold); color: var(--gold); transform: translateY(-2px); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .scroll-hint {
+    position: absolute; bottom: 2.5rem; left: 50%;
+    transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+    font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--dust);
+    animation: fadeUp 1s ease forwards 1.5s; opacity: 0;
+  }
+  .scroll-line {
+    width: 1px; height: 40px;
+    background: linear-gradient(to bottom, var(--dust), transparent);
+    animation: scrollDrop 1.8s ease-in-out infinite;
+  }
+  @keyframes scrollDrop {
+    0%, 100% { transform: scaleY(1); opacity: 1; }
+    50% { transform: scaleY(0.4); opacity: 0.3; }
+  }
+
+  /* ── NOTIFICATION DEMO ── */
+  .notif-section {
+    padding: 8rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .notif-section::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(201,168,76,0.05), transparent);
+  }
+  .section-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    text-align: center;
+    margin-bottom: 1.2rem;
+    line-height: 1.2;
+  }
+  .section-sub {
+    text-align: center;
+    color: var(--cream-dim);
+    max-width: 500px;
+    margin: 0 auto 5rem;
+    line-height: 1.75;
+    font-size: 1rem;
+  }
+
+  .notif-demo {
+    max-width: 420px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  /* Phone mockup */
+  .phone-mock {
+    background: #111;
+    border-radius: 36px;
+    padding: 14px;
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.1),
+      0 40px 80px rgba(0,0,0,0.6),
+      0 0 60px rgba(201,168,76,0.08);
+    position: relative;
+  }
+  .phone-screen {
+    background: #1a1a2e;
+    border-radius: 26px;
+    overflow: hidden;
+    aspect-ratio: 9/19;
+    position: relative;
+  }
+  .phone-notch {
+    position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 100px; height: 28px;
+    background: #111;
+    border-radius: 0 0 18px 18px;
+    z-index: 10;
+  }
+
+  /* Map bg in phone */
+  .phone-map-bg {
+    position: absolute; inset: 0;
+    background:
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.02) 0px, transparent 1px, transparent 40px),
+      repeating-linear-gradient(90deg, rgba(255,255,255,0.02) 0px, transparent 1px, transparent 40px),
+      linear-gradient(160deg, #0f1e30 0%, #162840 100%);
+  }
+
+  /* Roads on map */
+  .phone-road {
+    position: absolute;
+    background: rgba(255,255,255,0.06);
+  }
+  .pr1 { top: 30%; left: 0; right: 0; height: 2px; transform: rotate(-8deg); }
+  .pr2 { top: 60%; left: 0; right: 0; height: 1px; transform: rotate(3deg); }
+  .pr3 { left: 35%; top: 0; bottom: 0; width: 2px; transform: rotate(5deg); }
+  .pr4 { left: 65%; top: 0; bottom: 0; width: 1px; }
+
+  /* notification toast */
+  .toast {
+    position: absolute;
+    top: 54px; left: 12px; right: 12px;
+    background: rgba(15, 25, 40, 0.92);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 16px;
+    padding: 14px 14px;
+    display: flex; align-items: flex-start; gap: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    animation: toastSlide 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards 1s;
+    opacity: 0; transform: translateY(-20px);
+  }
+  @keyframes toastSlide {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .toast-icon {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--gold), #a07820);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; flex-shrink: 0;
+  }
+  .toast-body { flex: 1; }
+  .toast-app {
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 3px;
+  }
+  .toast-msg {
+    font-size: 0.78rem;
+    line-height: 1.45;
+    color: var(--cream);
+    font-weight: 300;
+  }
+  .toast-msg strong { font-weight: 500; color: var(--gold-light); }
+  .toast-time {
+    font-size: 0.6rem;
+    color: var(--dust);
+    margin-top: 4px;
+  }
+
+  /* Photo grid on phone */
+  .phone-photos {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 12px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3px;
+  }
+  .pp {
+    aspect-ratio: 1;
+    border-radius: 4px;
+    background: var(--navy-light);
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem;
+    opacity: 0;
+    animation: ppFade 0.5s ease forwards;
+  }
+  .pp:nth-child(1) { animation-delay: 2s; }
+  .pp:nth-child(2) { animation-delay: 2.2s; }
+  .pp:nth-child(3) { animation-delay: 2.4s; }
+  .pp:nth-child(4) { animation-delay: 2.6s; }
+  .pp:nth-child(5) { animation-delay: 2.8s; }
+  .pp:nth-child(6) { animation-delay: 3s; }
+  @keyframes ppFade { to { opacity: 1; } }
+
+  .pp-label {
+    position: absolute;
+    bottom: 100px; left: 12px; right: 12px;
+    font-size: 0.7rem;
+    color: var(--cream-dim);
+    text-align: center;
+    letter-spacing: 0.05em;
+    opacity: 0;
+    animation: ppFade 0.5s ease forwards 1.8s;
+  }
+
+  /* Lock overlay on one photo */
+  .pp-locked { position: relative; }
+  .pp-lock-icon {
+    position: absolute; inset: 0;
+    background: rgba(13,27,42,0.7);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem;
+    border-radius: 4px;
+  }
+
+  /* ── HOW IT WORKS ── */
+  .how-section {
+    padding: 8rem 2rem;
+    background: linear-gradient(180deg, var(--navy) 0%, var(--navy-mid) 100%);
+  }
+
+  .steps {
+    max-width: 900px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 3rem;
+    position: relative;
+  }
+
+  /* Dashed connector */
+  .steps::before {
+    content: '';
+    position: absolute;
+    top: 3.2rem; left: 15%; right: 15%;
+    height: 1px;
+    background: repeating-linear-gradient(90deg, var(--gold) 0px, var(--gold) 6px, transparent 6px, transparent 14px);
+    opacity: 0.3;
+  }
+
+  .step {
+    text-align: center;
+    position: relative;
+  }
+  .step-num {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    border: 1px solid rgba(201,168,76,0.4);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    color: var(--gold);
+    margin: 0 auto 1.5rem;
+    background: var(--navy);
+    position: relative;
+    transition: border-color 0.3s, background 0.3s;
+  }
+  .step:hover .step-num {
+    border-color: var(--gold);
+    background: rgba(201,168,76,0.1);
+  }
+  .step-icon {
+    font-size: 1.6rem;
+  }
+  .step h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    margin-bottom: 0.75rem;
+    color: var(--cream);
+  }
+  .step p {
+    font-size: 0.9rem;
+    color: var(--cream-dim);
+    line-height: 1.7;
+  }
+
+  /* ── FEATURES ── */
+  .features-section {
+    padding: 8rem 2rem;
+    background: var(--navy-mid);
+  }
+  .features-grid {
+    max-width: 1000px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2px;
+  }
+  .feat {
+    padding: 2.5rem;
+    background: var(--navy);
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+  }
+  .feat:hover { background: var(--navy-light); }
+  .feat::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .feat:hover::before { opacity: 1; }
+  .feat-icon {
+    width: 44px; height: 44px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 1.2rem;
+    opacity: 0.9;
+  }
+  .feat h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    margin-bottom: 0.8rem;
+  }
+  .feat p {
+    font-size: 0.88rem;
+    color: var(--cream-dim);
+    line-height: 1.7;
+  }
+  .feat-tag {
+    display: inline-block;
+    margin-top: 1rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid rgba(201,168,76,0.3);
+    padding: 0.25rem 0.6rem;
+    border-radius: 2px;
+  }
+
+  /* ── USE CASES ── */
+  .use-section {
+    padding: 8rem 2rem;
+    background: linear-gradient(180deg, var(--navy-mid), var(--navy));
+  }
+  .use-cases {
+    max-width: 900px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+  }
+  .use-card {
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 4px;
+    padding: 2.2rem;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+  .use-card:hover { border-color: rgba(201,168,76,0.3); transform: translateY(-4px); }
+  .use-card::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(201,168,76,0.04), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .use-card:hover::after { opacity: 1; }
+  .use-card-emoji { width:36px; height:36px; display:flex; align-items:center; justify-content:center; margin-bottom: 1rem; opacity: 0.85; }
+  .use-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    margin-bottom: 0.6rem;
+  }
+  .use-card p {
+    font-size: 0.87rem;
+    color: var(--cream-dim);
+    line-height: 1.7;
+  }
+
+  /* ── QUOTE BREAK ── */
+  .quote-break {
+    padding: 7rem 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .quote-break::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 70% 60% at 50% 50%, rgba(201,168,76,0.07), transparent);
+  }
+  .quote-break blockquote {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.5rem, 3.5vw, 2.5rem);
+    font-style: italic;
+    line-height: 1.5;
+    max-width: 700px;
+    margin: 0 auto 2rem;
+    color: var(--cream);
+    position: relative;
+    z-index: 1;
+  }
+  .quote-break blockquote::before {
+    content: '\201C';
+    font-size: 6rem;
+    color: var(--gold);
+    opacity: 0.3;
+    position: absolute;
+    top: -2rem; left: -2rem;
+    font-family: 'Playfair Display', serif;
+    line-height: 1;
+  }
+  .quote-attr {
+    font-size: 0.8rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--dust);
+    position: relative; z-index: 1;
+  }
+
+  /* ── WAITLIST ── */
+  .waitlist-section {
+    padding: 8rem 2rem 6rem;
+    text-align: center;
+    background: var(--navy-mid);
+    position: relative;
+    overflow: hidden;
+  }
+  .waitlist-section::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 70% at 50% 100%, rgba(201,168,76,0.06), transparent);
+  }
+  .waitlist-form {
+    display: flex;
+    gap: 0; max-width: 440px;
+    margin: 3rem auto 2rem;
+    position: relative; z-index: 1;
+  }
+  .waitlist-form input {
+    flex: 1;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-right: none;
+    padding: 0.9rem 1.2rem;
+    color: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    border-radius: 2px 0 0 2px;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  .waitlist-form input::placeholder { color: var(--dust); }
+  .waitlist-form input:focus { border-color: rgba(201,168,76,0.5); }
+  .waitlist-form button {
+    background: var(--gold);
+    color: var(--navy);
+    border: none;
+    padding: 0.9rem 1.6rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 0 2px 2px 0;
+    transition: background 0.3s;
+  }
+  .waitlist-form button:hover { background: var(--gold-light); }
+  .waitlist-note {
+    font-size: 0.78rem;
+    color: var(--dust);
+    position: relative; z-index: 1;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 3rem;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    color: var(--gold);
+  }
+  .footer-links { display: flex; gap: 2rem; }
+  .footer-links a {
+    font-size: 0.78rem;
+    color: var(--dust);
+    text-decoration: none;
+    letter-spacing: 0.08em;
+    transition: color 0.3s;
+  }
+  .footer-links a:hover { color: var(--gold); }
+  .footer-copy {
+    font-size: 0.75rem;
+    color: var(--dust);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    nav ul { display: none; }
+    nav { padding: 1.2rem 1.5rem; }
+    .steps::before { display: none; }
+    .hero-title { font-size: 2.8rem; }
+    footer { flex-direction: column; align-items: flex-start; }
+    .pf1, .pf2, .pf3, .pf4, .pf5, .pf6 { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Late<span>gram</span></div>
+  <ul>
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#waitlist">Join Beta</a></li>
+    <li><a href="#waitlist" class="nav-cta">Get Early Access</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+
+  <!-- floating photo cards -->
+  <div class="photo-float pf1"><div class="photo-inner"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg></div></div>
+  <div class="photo-float pf2"><div class="photo-inner"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div></div>
+  <div class="photo-float pf3"><div class="photo-inner"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div></div>
+  <div class="photo-float pf4"><div class="photo-inner"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div></div>
+  <div class="photo-float pf5"><div class="photo-inner"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div></div>
+  <div class="photo-float pf6"><div class="photo-inner"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div></div>
+
+  <!-- pulse pins -->
+  <div class="pin-pulse pd1"></div>
+  <div class="pin-pulse pd2"></div>
+  <div class="pin-pulse pd3"></div>
+
+  <div class="hero-content">
+    <p class="hero-eyebrow">Introducing Lategram</p>
+    <h1 class="hero-title">
+      Every place<br>
+      <em>holds a story.</em>
+    </h1>
+    <p class="hero-sub">
+      Leave photos at the places you love. Lategram quietly checks who else has been there —
+      and when a mutual contact arrives, it connects you both. No setup. No lists. Just the magic of being somewhere someone you know once stood.
+    </p>
+    <div class="hero-actions">
+      <a href="#waitlist" class="btn-primary">Get Early Access</a>
+      <a href="#how" class="btn-ghost">See How It Works</a>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    Scroll
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- NOTIFICATION DEMO -->
+<section class="notif-section" id="notify">
+  <p class="section-label">The Magic Moment</p>
+  <h2 class="section-title">You arrive.<br>Your contacts <em style="font-style:italic; color:var(--gold);">find you.</em></h2>
+  <p class="section-sub">
+    No lists to build. No numbers to add. Lategram silently cross-references your phone contacts the moment you step into a tagged location — and surfaces the people who were already there.
+  </p>
+
+  <div class="notif-demo">
+    <div class="phone-mock">
+      <div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="phone-map-bg">
+          <div class="phone-road pr1"></div>
+          <div class="phone-road pr2"></div>
+          <div class="phone-road pr3"></div>
+          <div class="phone-road pr4"></div>
+        </div>
+
+        <!-- Toast notification -->
+        <div class="toast">
+          <div class="toast-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          <div class="toast-body">
+            <div class="toast-app">Lategram · Contact Match</div>
+            <div class="toast-msg">
+              <strong>Sarah M. was here.</strong><br>
+              She's in your contacts — and left 4 photos at this spot 8 months ago.
+            </div>
+            <div class="toast-time">Now · She can also see you visited</div>
+          </div>
+        </div>
+
+        <div class="pp-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:4px"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg> Memories at this location</div>
+        <div class="phone-photos">
+          <div class="pp"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div>
+          <div class="pp"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div>
+          <div class="pp pp-locked"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><div class="pp-lock-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div></div>
+          <div class="pp"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div>
+          <div class="pp"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div>
+          <div class="pp"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-section" id="how">
+  <p class="section-label">Simple By Design</p>
+  <h2 class="section-title">How Lategram Works</h2>
+  <p class="section-sub">Three steps. One beautiful experience.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div>
+      <h3>Capture the Moment</h3>
+      <p>Take a photo at any location. It's silently pinned to your GPS coordinates — anchored to that exact spot, waiting to be discovered.</p>
+    </div>
+    <div class="step">
+      <div class="step-num"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg></div>
+      <h3>Lategram Reads Your Contacts</h3>
+      <p>That's it. No manual setup. When you arrive anywhere, Lategram checks your existing phone contacts against who's left memories there.</p>
+    </div>
+    <div class="step">
+      <div class="step-num"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+      <h3>A Connection Surfaces</h3>
+      <p>If a mutual contact — someone who also has you saved — was there before you, both of you are notified. Their photos unlock. The place comes alive.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features-section" id="features">
+  <p class="section-label">Built With Care</p>
+  <h2 class="section-title" style="text-align:center; margin-bottom:1rem;">Everything You Need,<br>Nothing You Don't</h2>
+  <p class="section-sub" style="text-align:center; max-width:480px; margin: 0 auto 4rem; color: var(--cream-dim); line-height:1.75;">
+    Thoughtfully designed for the moments that matter most.
+  </p>
+
+  <div class="features-grid">
+    <div class="feat">
+      <div class="feat-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+      <h3>GPS-Locked Memories</h3>
+      <p>Photos are invisibly anchored to coordinates. No one can browse them until they physically arrive at that location.</p>
+      <span class="feat-tag">Privacy First</span>
+    </div>
+    <div class="feat">
+      <div class="feat-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+      <h3>Automatic Contact Matching</h3>
+      <p>No lists to curate. Lategram reads your existing phone contacts on arrival. If a mutual match exists at your location, both parties are alerted simultaneously.</p>
+      <span class="feat-tag">Zero Setup</span>
+    </div>
+    <div class="feat">
+      <div class="feat-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+      <h3>No Downloading</h3>
+      <p>Visitors can view photos in-app, but only the original photographer can save them. Your memories stay yours.</p>
+      <span class="feat-tag">Secure</span>
+    </div>
+    <div class="feat">
+      <div class="feat-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+      <h3>Global Location Library</h3>
+      <p>Every tagged place builds a shared gallery. Explore what others have left — cafés, viewpoints, parks, beaches.</p>
+      <span class="feat-tag">Community</span>
+    </div>
+    <div class="feat">
+      <div class="feat-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
+      <h3>Notes & Captions</h3>
+      <p>Attach a message to your photos. A sentence. A story. A love note. It arrives with the image.</p>
+      <span class="feat-tag">Personal</span>
+    </div>
+    <div class="feat">
+      <div class="feat-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+      <h3>Time-Stamped History</h3>
+      <p>See when a memory was left. Two years ago. A decade. Moments preserved like photographs in a drawer.</p>
+      <span class="feat-tag">Timeless</span>
+    </div>
+  </div>
+</section>
+
+<!-- MUTUAL TRUST MODEL -->
+<section style="padding: 8rem 2rem; background: var(--navy); position:relative; overflow:hidden;">
+  <div style="position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 50%, rgba(201,168,76,0.05), transparent);pointer-events:none;"></div>
+  <p class="section-label">The Trust Layer</p>
+  <h2 class="section-title" style="text-align:center; margin-bottom:1rem;">Only People Who<br><em style="font-style:italic;color:var(--gold);">Already Know You</em></h2>
+  <p class="section-sub" style="text-align:center;max-width:520px;margin:1rem auto 5rem;color:var(--cream-dim);line-height:1.8;">
+    Lategram uses a strict mutual contact rule. Both people must have each other saved in their phones. No one-sided surveillance. No strangers. Just genuine, real-world connections — rediscovered through place.
+  </p>
+
+  <div style="max-width:720px;margin:0 auto;display:grid;grid-template-columns:1fr 80px 1fr;align-items:center;gap:1rem;">
+    <!-- Person A -->
+    <div style="background:var(--navy-light);border:1px solid rgba(201,168,76,0.2);border-radius:4px;padding:2rem;text-align:center;">
+      <div style="font-size:2.5rem;margin-bottom:0.8rem;"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+      <div style="font-family:'Playfair Display',serif;font-size:1rem;margin-bottom:0.5rem;">You</div>
+      <div style="font-size:0.78rem;color:var(--cream-dim);line-height:1.6;">You have <strong style="color:var(--gold);">Sarah</strong> saved in your contacts.<br>You visit the Waterfront.</div>
+    </div>
+
+    <!-- Arrow / mutual indicator -->
+    <div style="text-align:center;">
+      <div style="font-size:1.4rem;color:var(--gold);"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8l4 4-4 4M7 8l-4 4 4 4M14 4l-4 16"/></svg></div>
+      <div style="font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--dust);margin-top:0.4rem;">Mutual</div>
+    </div>
+
+    <!-- Person B -->
+    <div style="background:var(--navy-light);border:1px solid rgba(201,168,76,0.2);border-radius:4px;padding:2rem;text-align:center;">
+      <div style="font-size:2.5rem;margin-bottom:0.8rem;"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+      <div style="font-family:'Playfair Display',serif;font-size:1rem;margin-bottom:0.5rem;">Sarah</div>
+      <div style="font-size:0.78rem;color:var(--cream-dim);line-height:1.6;">Sarah also has <strong style="color:var(--gold);">you</strong> saved.<br>She left photos here last year.</div>
+    </div>
+  </div>
+
+  <!-- Result -->
+  <div style="max-width:480px;margin:3rem auto 0;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.25);border-radius:4px;padding:1.8rem;text-align:center;">
+    <div style="margin-bottom:0.8rem;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+    <div style="font-family:'Playfair Display',serif;font-size:1.05rem;margin-bottom:0.6rem;">Both are notified. Her photos unlock for you.</div>
+    <div style="font-size:0.82rem;color:var(--cream-dim);line-height:1.7;">If only one person has the other saved — nothing happens. The connection stays private, and neither party is alerted. Trust is always mutual.</div>
+  </div>
+</section>
+
+<!-- USE CASES -->
+<section class="use-section">
+  <p class="section-label">Who It's For</p>
+  <h2 class="section-title" style="text-align:center; margin-bottom:1rem;">Every Story<br>Has a Place</h2>
+  <p class="section-sub" style="text-align:center; max-width:440px; margin:0 auto 4rem; color:var(--cream-dim); line-height:1.75;">
+    Lategram is for anyone who believes places carry meaning.
+  </p>
+  <div class="use-cases">
+    <div class="use-card">
+      <div class="use-card-emoji"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+      <h3>Grieving Families</h3>
+      <p>Leave photos at places your loved one cherished. When family visits those spots, they'll find the memories waiting.</p>
+    </div>
+    <div class="use-card">
+      <div class="use-card-emoji"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+      <h3>Travellers</h3>
+      <p>Build a visual journal tied to real places. Return years later and rediscover who you were when you were there.</p>
+    </div>
+    <div class="use-card">
+      <div class="use-card-emoji"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+      <h3>Couples</h3>
+      <p>Tag your first date spot, proposal location, favourite walk. Surprise each other with hidden memories to find.</p>
+    </div>
+    <div class="use-card">
+      <div class="use-card-emoji"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+      <h3>Communities</h3>
+      <p>Neighbourhoods, schools, local landmarks — build a shared visual archive of places that define your community.</p>
+    </div>
+    <div class="use-card">
+      <div class="use-card-emoji"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+      <h3>Friends & Groups</h3>
+      <p>Tag a campsite, a road trip stop, a concert venue. Anyone in your circle who visits discovers what you left behind.</p>
+    </div>
+    <div class="use-card">
+      <div class="use-card-emoji"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div>
+      <h3>History & Heritage</h3>
+      <p>Leave context and photos at historical sites. Build a layer of living memory over the places that shaped us.</p>
+    </div>
+  </div>
+</section>
+
+<!-- QUOTE BREAK -->
+<section class="quote-break">
+  <blockquote>
+    The place remembers, even when we forget.
+  </blockquote>
+  <p class="quote-attr">Nkosana Ndamane's driving idea behind Lategram</p>
+</section>
+
+<!-- WAITLIST -->
+<section class="waitlist-section" id="waitlist">
+  <p class="section-label">Coming Soon</p>
+  <h2 class="section-title">Be Among the First<br>to Leave Your Mark</h2>
+  <p class="section-sub" style="max-width:460px; margin: 1.2rem auto 0; color:var(--cream-dim); line-height:1.75;">
+    We're opening Lategram to a small group of early users. Sign up with your number — it's how the magic works. When a mutual contact joins, you'll both discover each other's memories automatically.
+  </p>
+  <div class="waitlist-form">
+    <input type="tel" placeholder="+27 your number" />
+    <button onclick="handleWaitlist(this)">Join Waitlist</button>
+  </div>
+  <p class="waitlist-note">Your number is only ever used for mutual contact matching — never shared, never sold.</p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Lategram</div>
+  <div class="footer-links">
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+    <a href="#">Contact</a>
+    <a href="#">Instagram</a>
+  </div>
+  <p class="footer-copy">© 2026 Lategram. Every place holds a story.</p>
+</footer>
+
+<script>
+  function handleWaitlist(btn) {
+    const input = btn.previousElementSibling;
+    if (!input.value.trim()) {
+      input.style.borderColor = 'rgba(200,75,49,0.6)';
+      input.placeholder = 'Please enter your number';
+      setTimeout(() => {
+        input.style.borderColor = '';
+        input.placeholder = 'Your phone number';
+      }, 2000);
+      return;
+    }
+    btn.textContent = '✓ You\'re on the list!';
+    btn.style.background = '#2a6e4a';
+    btn.style.color = '#fff';
+    input.value = '';
+    input.placeholder = 'Thank you 💛';
+    input.disabled = true;
+    btn.disabled = true;
+  }
+
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.step, .feat, .use-card').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(30px)';
+    el.style.transition = 'opacity 0.7s ease, transform 0.7s ease';
+    observer.observe(el);
+  });
+</script>
+</body>
+</html>
