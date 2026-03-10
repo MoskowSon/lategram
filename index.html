@@ -976,9 +976,47 @@
     We're opening Lategram to a small group of early users. Sign up with your number — it's how the magic works. When a mutual contact joins, you'll both discover each other's memories automatically.
   </p>
   <div class="waitlist-form">
-    <input type="tel" placeholder="+27 your number" />
-    <button onclick="handleWaitlist(this)">Join Waitlist</button>
+    <select id="country-code" style="
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-right: none;
+      padding: 0.9rem 0.6rem;
+      color: var(--cream);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      border-radius: 2px 0 0 0;
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      min-width: 80px;
+      text-align: center;
+    ">
+      <option value="+27">🇿🇦 +27</option>
+      <option value="+1">🇺🇸 +1</option>
+      <option value="+44">🇬🇧 +44</option>
+      <option value="+61">🇦🇺 +61</option>
+      <option value="+64">🇳🇿 +64</option>
+      <option value="+91">🇮🇳 +91</option>
+      <option value="+234">🇳🇬 +234</option>
+      <option value="+254">🇰🇪 +254</option>
+      <option value="+263">🇿🇼 +263</option>
+      <option value="+267">🇧🇼 +267</option>
+      <option value="+260">🇿🇲 +260</option>
+      <option value="+258">🇲🇿 +258</option>
+      <option value="+249">🇸🇩 +249</option>
+      <option value="+20">🇪🇬 +20</option>
+      <option value="+212">🇲🇦 +212</option>
+      <option value="+33">🇫🇷 +33</option>
+      <option value="+49">🇩🇪 +49</option>
+      <option value="+31">🇳🇱 +31</option>
+      <option value="+55">🇧🇷 +55</option>
+      <option value="+86">🇨🇳 +86</option>
+    </select>
+    <input type="tel" id="waitlist-input" placeholder="82 123 4567" style="border-radius: 0;" />
+    <button onclick="handleWaitlist(this)" style="border-radius: 0 2px 2px 0;">Join Waitlist</button>
   </div>
+  <p id="waitlist-error" style="font-size:0.78rem; color:#C84B31; margin-top:0.6rem; min-height:1.2rem; position:relative; z-index:1;"></p>
   <p class="waitlist-note">Your number is only ever used for mutual contact matching — never shared, never sold.</p>
 </section>
 
@@ -995,24 +1033,101 @@
 </footer>
 
 <script>
-  function handleWaitlist(btn) {
-    const input = btn.previousElementSibling;
-    if (!input.value.trim()) {
+  async function handleWaitlist(btn) {
+    const input = document.getElementById('waitlist-input');
+    const countryCode = document.getElementById('country-code').value;
+    const errorEl = document.getElementById('waitlist-error');
+    const raw = input.value.trim();
+
+    // Clear previous error
+    errorEl.textContent = '';
+    input.style.borderColor = '';
+
+    // Strip spaces, dashes, parentheses
+    const cleaned = raw.replace(/[\s\-().]/g, '');
+
+    // Must not be empty
+    if (!cleaned) {
+      errorEl.textContent = 'Please enter your phone number.';
       input.style.borderColor = 'rgba(200,75,49,0.6)';
-      input.placeholder = 'Please enter your number';
-      setTimeout(() => {
-        input.style.borderColor = '';
-        input.placeholder = 'Your phone number';
-      }, 2000);
       return;
     }
-    btn.textContent = '✓ You\'re on the list!';
-    btn.style.background = '#2a6e4a';
-    btn.style.color = '#fff';
-    input.value = '';
-    input.placeholder = 'Thank you 💛';
-    input.disabled = true;
+
+    // Must only contain digits (and optionally a leading 0)
+    if (!/^[0-9]+$/.test(cleaned)) {
+      errorEl.textContent = 'Phone number should contain digits only — no letters or symbols.';
+      input.style.borderColor = 'rgba(200,75,49,0.6)';
+      return;
+    }
+
+    // Strip leading 0 if present (e.g. 0821234567 → 821234567)
+    const stripped = cleaned.startsWith('0') ? cleaned.slice(1) : cleaned;
+
+    // Digit length rules per country code
+    const lengthRules = {
+      '+27':  9,   // SA: 9 digits after country code
+      '+1':   10,  // US/CA
+      '+44':  10,  // UK
+      '+61':  9,   // AU
+      '+64':  9,   // NZ
+      '+91':  10,  // IN
+      '+234': 10,  // NG
+      '+254': 9,   // KE
+      '+263': 9,   // ZW
+      '+267': 8,   // BW
+      '+260': 9,   // ZM
+      '+258': 9,   // MZ
+      '+249': 9,   // SD
+      '+20':  10,  // EG
+      '+212': 9,   // MA
+      '+33':  9,   // FR
+      '+49':  10,  // DE
+      '+31':  9,   // NL
+      '+55':  11,  // BR
+      '+86':  11,  // CN
+    };
+
+    const expectedLength = lengthRules[countryCode];
+    if (expectedLength && stripped.length !== expectedLength) {
+      errorEl.textContent = `A ${countryCode} number should have ${expectedLength} digits after the country code. You entered ${stripped.length}.`;
+      input.style.borderColor = 'rgba(200,75,49,0.6)';
+      return;
+    }
+
+    // Build full international number
+    const fullNumber = `${countryCode}${stripped}`;
+
+    // Submit
+    btn.textContent = 'Submitting...';
     btn.disabled = true;
+
+    try {
+      const response = await fetch('https://formspree.io/f/xqeypgna', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ phone: fullNumber })
+      });
+
+      if (response.ok) {
+        btn.textContent = "✓ You're on the list!";
+        btn.style.background = '#2a6e4a';
+        btn.style.color = '#fff';
+        input.value = '';
+        input.placeholder = 'Thank you 💛';
+        input.disabled = true;
+        document.getElementById('country-code').disabled = true;
+        errorEl.style.color = '#2a6e4a';
+        errorEl.textContent = `We'll be in touch on ${fullNumber}`;
+      } else {
+        btn.textContent = 'Try again';
+        btn.disabled = false;
+        errorEl.textContent = 'Something went wrong — please try again.';
+      }
+    } catch (err) {
+      btn.textContent = 'Try again';
+      btn.disabled = false;
+      errorEl.textContent = 'Connection error — please check your internet and try again.';
+    }
   }
 
   // Scroll reveal
