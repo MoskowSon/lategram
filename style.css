@@ -504,6 +504,14 @@
   }
 
   /* ── USE CASES ── */
+  #actors{
+    max-width:720px;
+    margin:0 auto;
+    display:grid;
+    grid-template-columns:1fr 80px 1fr;
+    align-items:center;
+    gap:1rem;
+  }
   .use-section {
     padding: 8rem 2rem;
     background: linear-gradient(180deg, var(--navy-mid), var(--navy));
@@ -602,6 +610,7 @@
   }
   .waitlist-form {
     display: flex;
+    flex-wrap: wrap;
     gap: 0; max-width: 440px;
     margin: 3rem auto 2rem;
     position: relative; z-index: 1;
@@ -677,6 +686,10 @@
 
   /* ── RESPONSIVE ── */
   @media (max-width: 768px) {
+    #actors{
+        display: flex;
+        flex-direction: column;
+    }
     nav ul { display: none; }
     nav { padding: 1.2rem 1.5rem; }
     .steps::before { display: none; }
